@@ -111,6 +111,12 @@ abstract class Zend_Db_Statement implements Zend_Db_Statement_Interface
         if ($sql instanceof Zend_Db_Select) {
             $sql = $sql->assemble();
         }
+
+        Glitch_Registry::getLog()->log(
+            new Glitch_LazyString(function () use(&$sql) {
+                return 'SQL Statement: '. $sql; }),
+            At_Application_Resource_Log::VERBOSE);
+
         $this->_parseParameters($sql);
         $this->_prepare($sql);
 
@@ -221,6 +227,11 @@ abstract class Zend_Db_Statement implements Zend_Db_Statement_Interface
      */
     public function bindColumn($column, &$param, $type = null)
     {
+        Glitch_Registry::getLog()->log(
+            new Glitch_LazyString(function () use (&$column, &$param) {
+                return 'bindColumn: '. $column . ' - ' . $param; }),
+            At_Application_Resource_Log::VERBOSE);
+
         $this->_bindColumn[$column] =& $param;
         return true;
     }
@@ -237,6 +248,11 @@ abstract class Zend_Db_Statement implements Zend_Db_Statement_Interface
      */
     public function bindParam($parameter, &$variable, $type = null, $length = null, $options = null)
     {
+        Glitch_Registry::getLog()->log(
+            new Glitch_LazyString(function () use (&$parameter, &$variable) {
+                return 'bindParam: '. $parameter . ' - ' . $variable; }),
+            At_Application_Resource_Log::VERBOSE);
+
         if (!is_int($parameter) && !is_string($parameter)) {
             /**
              * @see Zend_Db_Statement_Exception
@@ -282,6 +298,11 @@ abstract class Zend_Db_Statement implements Zend_Db_Statement_Interface
      */
     public function bindValue($parameter, $value, $type = null)
     {
+        Glitch_Registry::getLog()->log(
+            new Glitch_LazyString(function () use (&$parameter, &$value) {
+                return 'bindValue: '. $parameter . ' - ' . $value; }),
+            At_Application_Resource_Log::VERBOSE);
+
         return $this->bindParam($parameter, $value, $type);
     }
 

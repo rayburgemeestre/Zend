@@ -1069,10 +1069,31 @@ class Zend_Http_Client
                 }
             }
 
+            // Log the request
+            $logger = Glitch_Registry::getLog();
+            $logger->log(
+                implode(' ', array('Requesting: ', $this->method, $uri, $this->config['httpversion'])),
+                Zend_Log::DEBUG);
+            $logger->log(
+                new Glitch_LazyString(
+                    function () use(&$headers, &$body) {
+                        return "Sending body: $body\nHeaders:\n" . print_r($headers, 1);
+                    }),
+                At_Application_Resource_Log::VERBOSE);
+
             $this->last_request = $this->adapter->write($this->method,
                 $uri, $this->config['httpversion'], $headers, $body);
 
             $response = $this->adapter->read();
+
+            // Log the response
+            $logger->log(
+                new Glitch_LazyString(
+                    function () use(&$response) {
+                        return "Received response: " . (string)$response;
+                    }),
+                At_Application_Resource_Log::VERBOSE);
+
             if (! $response) {
                 /** @see Zend_Http_Client_Exception */
                 // require_once 'Zend/Http/Client/Exception.php';
